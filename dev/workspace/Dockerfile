@@ -4,7 +4,7 @@ FROM ubuntu:latest
 RUN apt-get update && apt-get -y upgrade
 
 # Install base dependencies
-RUN apt install -y vim curl git-core zsh build-essential libssl-dev
+RUN apt install -y vim curl git-core zsh build-essential libssl-dev inotify-tools
 
 # Install Go
 WORKDIR /root
