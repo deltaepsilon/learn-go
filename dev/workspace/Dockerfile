@@ -26,4 +26,21 @@ COPY .zshrc .append-to-zshrc
 RUN sed -i 's/\r//' .append-to-zshrc
 RUN cat .append-to-zshrc >> .zshrc
 
+WORKDIR /root/go
+RUN /usr/local/go/bin/go get -v \
+  github.com/nsf/gocode \
+  github.com/uudashr/gopkgs/cmd/gopkgs \
+  github.com/ramya-rao-a/go-outline \
+  github.com/acroca/go-symbols \
+  golang.org/x/tools/cmd/guru \
+  github.com/sqs/goreturns \
+  golang.org/x/tools/cmd/gorename \
+  github.com/fatih/gomodifytags \
+  github.com/josharian/impl \
+  github.com/rogpeppe/godef \
+  && echo "Done!"
+# go-symbols guru gorename gotests gomodifytags impl fillstruct goplay godoctor dlv gocode-gomod godef goreturns golint
+
+WORKDIR /app
+
 CMD tail -f /dev/null
