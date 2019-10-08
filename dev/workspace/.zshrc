@@ -7,8 +7,10 @@ watch() { while inotifywait --exclude .swp -e modify -r .; do $@; done; }
 
 
 # Exports
-export GOPATH=/app
-export PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
+export GOPATH=/root/go
+export PATH=$GOPATH/bin:$PATH
+export PATH=/usr/local/go/bin:$PATH
+export PATH=/root/go/bin:$PATH
 
 # Aliases
 alias ll="ls -al"

@@ -26,7 +26,9 @@ COPY .zshrc .append-to-zshrc
 RUN sed -i 's/\r//' .append-to-zshrc
 RUN cat .append-to-zshrc >> .zshrc
 
-WORKDIR /root/go
+ARG GOPATH=/root/go
+ENV GOPATH=${GOPATH}
+WORKDIR ${GOPATH}
 RUN /usr/local/go/bin/go get -v \
   github.com/nsf/gocode \
   github.com/uudashr/gopkgs/cmd/gopkgs \
@@ -37,9 +39,14 @@ RUN /usr/local/go/bin/go get -v \
   golang.org/x/tools/cmd/gorename \
   github.com/fatih/gomodifytags \
   github.com/josharian/impl \
+  golang.org/x/tools/cmd/goimports \
   github.com/rogpeppe/godef \
+  golang.org/x/tools/gopls \
   && echo "Done!"
-# go-symbols guru gorename gotests gomodifytags impl fillstruct goplay godoctor dlv gocode-gomod godef goreturns golint
+
+# RUN /usr/local/go/bin/go get -v \
+#   github.com/onsi/ginkgo/ginkgo \
+#   github.com/onsi/gomega/...
 
 WORKDIR /app
 

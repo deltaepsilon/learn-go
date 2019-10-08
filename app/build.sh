@@ -1,0 +1,1 @@
+go build ./katas/create-phone-number
