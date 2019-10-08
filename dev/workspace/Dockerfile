@@ -44,10 +44,8 @@ RUN /usr/local/go/bin/go get -v \
   golang.org/x/tools/gopls \
   && echo "Done!"
 
-# RUN /usr/local/go/bin/go get -v \
-#   github.com/onsi/ginkgo/ginkgo \
-#   github.com/onsi/gomega/...
-
 WORKDIR /app
+RUN /usr/local/go/bin/go get -u \
+  github.com/onsi/ginkgo/ginkgo 
 
 CMD tail -f /dev/null
