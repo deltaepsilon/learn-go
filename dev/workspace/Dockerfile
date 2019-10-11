@@ -29,18 +29,19 @@ RUN cat .append-to-zshrc >> .zshrc
 ARG GOPATH=/root/go
 ENV GOPATH=${GOPATH}
 WORKDIR ${GOPATH}
-RUN /usr/local/go/bin/go get -v \
-  github.com/nsf/gocode \
-  github.com/uudashr/gopkgs/cmd/gopkgs \
-  github.com/ramya-rao-a/go-outline \
+RUN /usr/local/go/bin/go get -u \
   github.com/acroca/go-symbols \
-  golang.org/x/tools/cmd/guru \
-  github.com/sqs/goreturns \
-  golang.org/x/tools/cmd/gorename \
   github.com/fatih/gomodifytags \
   github.com/josharian/impl \
-  golang.org/x/tools/cmd/goimports \
+  github.com/ramya-rao-a/go-outline \
   github.com/rogpeppe/godef \
+  github.com/sqs/goreturns \
+  github.com/stamblerre/gocode \
+  github.com/uudashr/gopkgs/cmd/gopkgs \
+  golang.org/x/lint/golint \
+  golang.org/x/tools/cmd/goimports \
+  golang.org/x/tools/cmd/gorename \
+  golang.org/x/tools/cmd/guru \
   golang.org/x/tools/gopls \
   && echo "Done!"
 
