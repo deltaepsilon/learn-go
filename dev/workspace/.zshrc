@@ -11,6 +11,7 @@ export GOPATH=/root/go
 export PATH=$GOPATH/bin:$PATH
 export PATH=/usr/local/go/bin:$PATH
 export PATH=/root/go/bin:$PATH
+export PATH=/app/bin:$PATH
 
 # Aliases
 alias ll="ls -al"

@@ -1,1 +1,1 @@
-go build ./katas/create-phone-number
+go build ./tools/kata && mv kata bin/kata
