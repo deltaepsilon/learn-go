@@ -27,8 +27,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const packagePath = "github.com/deltaepsilon/learn-go"
-const kataRoot = "/app/kata-test"
+const packagePath = "github.com/deltaepsilon/learn-go/katas"
+const kataRoot = "/app/katas"
 const unknownPackagePath = "UNKNOWN_PACKAGE_PATH"
 
 // createCmd represents the create command
