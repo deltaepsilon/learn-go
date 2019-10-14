@@ -13,32 +13,22 @@ func ConvertFracts(a [][]int) string {
 
 func getCommonDenominator(a [][]int) int {
 	maxDenominator := getMaxDenominator(a)
-
-	fmt.Println("a", a)
-	fmt.Println("maxDenominator", maxDenominator)
-
-	result := maxDenominator
+	maxJ := len(a) - 1
 
 	for i := 1; i < maxDenominator; i++ {
-		remainders := 0
+		for j, pair := range a {
+			remainder := i * pair[0] % pair[1]
+			isLast := j == maxJ
 
-		for _, pair := range a {
-			remainders += i%pair[0] + i%pair[1]
-
-			if remainders > 0 {
+			if remainder > 0 {
 				break
+			} else if isLast {
+				return i
 			}
-		}
-
-		if remainders == 0 {
-			result = i
-			break
 		}
 	}
 
-	fmt.Println("result", result)
-
-	return result
+	return maxDenominator
 }
 
 func getMaxDenominator(a [][]int) int {
@@ -55,11 +45,9 @@ func rebaseFractions(a [][]int, denominator int) [][]int {
 	result := [][]int{}
 
 	for _, pair := range a {
-		var differential int = denominator / pair[1]
-		rebasedNumerator := pair[0] * differential
-		rebasedDenominator := pair[1] * differential
+		rebasedNumerator := denominator * pair[0] / pair[1]
 
-		result = append(result, []int{rebasedNumerator, rebasedDenominator})
+		result = append(result, []int{rebasedNumerator, denominator})
 	}
 
 	return result
