@@ -1,8 +1,11 @@
 package partitions
 
 import (
+	"fmt"
 	"math"
 )
+
+var laggedLength int = 0
 
 func Partitions(n int) int {
 	var lag int = 0
@@ -12,8 +15,21 @@ func Partitions(n int) int {
 	}
 
 	partitions := getPartitions(n, [][]int{{n}})
+	length := len(partitions)
+	diff := length - laggedLength
+	laggedLength = length
 
-	return lag + len(partitions)
+	count := 0
+	for _, part := range partitions {
+		if len(part) == 3 {
+			count++
+			fmt.Println("part", part)
+
+		}
+	}
+
+	fmt.Println("n, length, diff, count", n, length, diff, count)
+	return lag + length
 }
 
 func getPartitions(n int, partitions [][]int) [][]int {
