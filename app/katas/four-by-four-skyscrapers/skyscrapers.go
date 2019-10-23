@@ -2,7 +2,6 @@ package skyscrapers
 
 import (
 	"fmt"
-	"math"
 	"strconv"
 )
 
@@ -42,7 +41,7 @@ func processFours(clues []int, eGrid eliminationGrid) eliminationGrid {
 
 			for mapIndex, eMap := range vector {
 				for key := range eMap {
-					vector[mapIndex][key] = key == mapIndex + 1
+					vector[mapIndex][key] = key == mapIndex+1
 				}
 			}
 		}
@@ -81,7 +80,7 @@ func processTwos(clues []int, eGrid eliminationGrid) eliminationGrid {
 				if vector[i][4] == true {
 					break
 				} else {
-					eliminateGreaterThan(vector[i], int(math.Max(float64(maxHeightOfFirst-1), float64(1))))
+					eliminateGreaterThan(vector[i], maxHeightOfFirst-1)
 				}
 			}
 		}
@@ -156,12 +155,12 @@ func executeElimination(eGrid eliminationGrid) eliminationGrid {
 
 	for _, row := range eGrid {
 		eliminateTrueSiblings(row)
-		eliminateExcluded(row)
+		promoteFound(row)
 	}
 
 	for _, column := range columns {
 		eliminateTrueSiblings(column)
-		eliminateExcluded(column)
+		promoteFound(column)
 	}
 
 	return eGrid
@@ -178,7 +177,7 @@ func eliminateTrueSiblings(vector [4]eliminationMap) {
 	}
 }
 
-func eliminateExcluded(vector [4]eliminationMap) {
+func promoteFound(vector [4]eliminationMap) {
 	for height := 1; height <= 4; height++ {
 		var count int
 		var lastTrueIndex int
@@ -191,7 +190,7 @@ func eliminateExcluded(vector [4]eliminationMap) {
 		}
 
 		if count == 1 {
-			for key, _ := range vector[lastTrueIndex] {
+			for key := range vector[lastTrueIndex] {
 				vector[lastTrueIndex][key] = key == height
 			}
 		}
@@ -225,16 +224,6 @@ func getClueVector(i int, eGrid eliminationGrid) [4]eliminationMap {
 	}
 
 	return clueVector
-}
-
-func reverseVector(vector [4]eliminationMap) [4]eliminationMap {
-	var result [4]eliminationMap
-
-	for i := 0; i < 4; i++ {
-		result[3-i] = vector[i]
-	}
-
-	return result
 }
 
 func getTrueKeys(eMap eliminationMap) []int {
