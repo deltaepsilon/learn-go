@@ -26,6 +26,7 @@ var _ = Describe("Huge", func() {
 		Expect(LastDigit([]int{499942, 898102, 846073})).To(Equal(6))
 		Expect(LastDigit([]int{12, 18})).To(Equal(4))
 		Expect(LastDigit([]int{8, 21})).To(Equal(8))
+		Expect(LastDigit([]int{3, 3, 2})).To(Equal(3))
 	})
 
 	It("should handle random cases", func() {
