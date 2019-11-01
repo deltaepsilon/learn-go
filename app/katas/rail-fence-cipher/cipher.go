@@ -7,14 +7,14 @@ import (
 
 func Encode(input string, rows int) string {
 	length := len(input)
-	lettersPerColumn := 2*rows - 2
+	lettersPerColumn := getLettersPerColumn(rows)
 	result := strings.Split(input, "")
 	rowCounts := getRowCounts(input, rows)
 
 	for i, r := range input {
 		var destination int
-		row, isRising := getRow(i, rows)
-		column := getColumn(i, rows)
+		row, isRising := getEncodeRow(i, rows)
+		column := getEncodeColumn(i, rows)
 		letter := string(r)
 		isFirstRow := row == 0
 		isLastRow := row == lettersPerColumn/2
@@ -46,17 +46,16 @@ func Encode(input string, rows int) string {
 }
 
 func Decode(input string, rows int) string {
-	lettersPerColumn := 2*rows - 2
+	lettersPerColumn := getLettersPerColumn(rows)
 	result := strings.Split(input, "")
 
 	for i, r := range input {
 		var destination int
 		row := getDecodeRow(input, i, rows)
 		column, isRising := getDecodeColumn(input, i, rows)
-		// rowStart := getDecodeRowStart(input, i, rows)
+		letter := string(r)
 		isFirstRow := row == 0
 		isLastRow := row == rows-1
-		letter := string(r)
 
 		if isFirstRow {
 			destination = column * lettersPerColumn
@@ -150,7 +149,7 @@ func getDecodeRow(input string, i, rows int) int {
 
 func getCountInPrecedingRows(input string, i, rows int) int {
 	var result int
-	row, _ := getRow(i, rows)
+	row, _ := getEncodeRow(i, rows)
 
 	if row > 0 {
 		rowCounts := getRowCounts(input, rows)
@@ -163,26 +162,11 @@ func getCountInPrecedingRows(input string, i, rows int) int {
 	return result
 }
 
-func getCountInPrecedingColumns(input string, i, rows int) int {
-	var result int
-	column := getColumn(i, rows)
-
-	if column > 0 {
-		columnCounts := getColumnCounts(input, rows)
-
-		for i := 0; i < column; i++ {
-			result += columnCounts[i]
-		}
-	}
-
-	return result
-}
-
 func getRowCounts(input string, rows int) []int {
 	var result []int
 
 	for i := 0; i < len(input); i++ {
-		row, _ := getRow(i, rows)
+		row, _ := getEncodeRow(i, rows)
 
 		if len(result) <= row {
 			result = append(result, 0)
@@ -198,7 +182,7 @@ func getColumnCounts(input string, rows int) []int {
 	var result []int
 
 	for i := 0; i < len(input); i++ {
-		column := getColumn(i, rows)
+		column := getEncodeColumn(i, rows)
 
 		if len(result) <= column {
 			result = append(result, 0)
@@ -210,8 +194,8 @@ func getColumnCounts(input string, rows int) []int {
 	return result
 }
 
-func getRow(i, rows int) (int, bool) {
-	lettersPerColumn := 2*rows - 2
+func getEncodeRow(i, rows int) (int, bool) {
+	lettersPerColumn := getLettersPerColumn(rows)
 	row := i % lettersPerColumn
 	isRising := row >= rows
 
@@ -222,8 +206,12 @@ func getRow(i, rows int) (int, bool) {
 	return row, isRising
 }
 
-func getColumn(i, rows int) int {
-	lettersPerColumn := 2*rows - 2
+func getEncodeColumn(i, rows int) int {
+	lettersPerColumn := getLettersPerColumn(rows)
 
 	return i / lettersPerColumn
+}
+
+func getLettersPerColumn(rows int) int {
+	return 2*rows - 2
 }
