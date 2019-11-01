@@ -1,7 +1,6 @@
 package cipher
 
 import (
-	"fmt"
 	"math"
 	"strings"
 )
@@ -47,16 +46,8 @@ func Encode(input string, rows int) string {
 }
 
 func Decode(input string, rows int) string {
-	length := len(input)
 	lettersPerColumn := 2*rows - 2
-	columns := int(math.Ceil(float64(length) / float64(lettersPerColumn)))
 	result := strings.Split(input, "")
-
-	fmt.Println("")
-	fmt.Println("input", input)
-	fmt.Println("columns", columns)
-
-	fmt.Println("  i r c d")
 
 	for i, r := range input {
 		var destination int
@@ -84,8 +75,6 @@ func Decode(input string, rows int) string {
 
 		}
 
-		fmt.Println(letter, i, row, column, destination, isRising)
-
 		result[destination] = letter
 
 	}
@@ -104,11 +93,9 @@ func getDecodeColumn(input string, i, rows int) (int, bool) {
 	if isFirstRow {
 		result = i
 	} else if isLastRow {
-		length := len(input)
-		lettersPerColumn := 2*rows - 2
-		fullColumns := length / lettersPerColumn
-		lastRowStart := length - fullColumns
-		result = i - lastRowStart
+		rowStart := getDecodeRowStart(input, i, rows)
+		result = int(math.Max(float64(i-rowStart), 0.0))
+
 	} else {
 		rowStart := getDecodeRowStart(input, i, rows)
 		startIsOdd := rowStart%2 == 1
