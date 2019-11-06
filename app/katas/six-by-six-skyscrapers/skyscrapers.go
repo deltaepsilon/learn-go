@@ -49,6 +49,9 @@ func SolvePuzzle(clues []int) [][]int {
 		}
 	}
 
+	fmt.Println("solved")
+	logMap(eMap)
+
 	// Return 6x6 matrix here ...
 	return result
 }
@@ -179,9 +182,9 @@ func eliminate(eMap eliminationMap) eliminationMap {
 func solveMap(eMap eliminationMap) eliminationMap {
 	for i := 0; i < 6; i++ {
 		row := getRow(eMap, i)
-		column := getColumn(eMap, i)
-
 		eMap = replaceVector(eMap, solveVector(row))
+
+		column := getColumn(eMap, i)
 		eMap = replaceVector(eMap, solveVector(column))
 	}
 
@@ -209,7 +212,9 @@ func solveVector(v vector) vector {
 						if i != k {
 							v[j].values[k] = false
 						}
+
 					}
+
 				}
 			}
 		}
