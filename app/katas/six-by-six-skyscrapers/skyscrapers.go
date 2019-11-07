@@ -1,6 +1,9 @@
 package skyscrapers
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 type eliminationMap [6]vector
 type vector [6]cell
@@ -11,68 +14,95 @@ type cell struct {
 }
 
 func SolvePuzzle(clues []int) [][]int {
-	var result [][]int
 	eMap := getEliminationMap()
+	eMap = processClues(eMap, clues)
+
+	result, isSolved := flattenMap(eMap)
+
+	if isSolved == false {
+
+		fmt.Println("isSolved", isSolved)
+		fmt.Println("result", result)
+		logMap(eMap, clues)
+	}
+
+	return result
+}
+
+func processClues(eMap eliminationMap, clues []int) eliminationMap {
+	initialMap := eMap
 
 	for i, clue := range clues {
 		switch clue {
 		case 6:
-			fmt.Println("sixes")
+			// fmt.Println("sixes")
 			eMap = sixes(eMap, clue, i)
-			logMap(eMap)
+			// logMap(eMap, clues)
 
 		case 5:
-			fmt.Println("fives")
 			eMap = fives(eMap, clue, i)
-			logMap(eMap)
+			// fmt.Println("fives")
+			// logMap(eMap, clues)
 
 		case 4:
-			fmt.Println("fours")
+			// fmt.Println("fours")
 			eMap = fours(eMap, clue, i)
-			logMap(eMap)
+			// logMap(eMap, clues)
 
 		case 3:
-			fmt.Println("threes")
+			// fmt.Println("threes")
 			eMap = threes(eMap, clue, i)
-			logMap(eMap)
+			// logMap(eMap, clues)
 
 		case 2:
-			fmt.Println("twos")
+			// fmt.Println("twos")
 			eMap = twos(eMap, clue, i)
-			logMap(eMap)
+			// logMap(eMap, clues)
 
 		case 1:
-			fmt.Println("ones")
+			// fmt.Println("ones")
 			eMap = ones(eMap, clue, i)
-			logMap(eMap)
+			// logMap(eMap, clues)
 
 		}
 	}
 
-	fmt.Println("solved")
-	logMap(eMap)
+	if hasChanged(eMap, initialMap) {
+		eMap = processClues(eMap, clues)
+	}
 
-	// Return 6x6 matrix here ...
-	return result
+	return eMap
+}
+
+func flattenMap(eMap eliminationMap) ([][]int, bool) {
+	var isSolved bool = true
+	result := make([][]int, 6)
+
+Solve:
+	for i := 0; i < 6; i++ {
+		for j := 0; j < 6; j++ {
+			s := getSolution(eMap[i][j])
+
+			if s == -1 {
+				isSolved = false
+
+				break Solve
+			} else {
+				if len(result) < i+1 {
+					result = append(result, make([]int, 6))
+				}
+
+				result[i] = append(result[i], s+1)
+			}
+		}
+	}
+
+	return result, isSolved
 }
 
 func sixes(eMap eliminationMap, clue, clueNumber int) eliminationMap {
 	return processClue(eMap, clue, clueNumber, func(v vector, clue int) vector {
-		for i := range v {
-			var values [6]bool
-
-			for j := 0; j < 6; j++ {
-				if i == j {
-					values[j] = true
-				} else {
-					values[j] = false
-				}
-			}
-
-			v[i].values = values
-		}
-
-		return v
+		return enforceRising(v, 5)
 	})
 }
 
@@ -83,15 +113,45 @@ func fives(eMap eliminationMap, clue, clueNumber int) eliminationMap {
 		v[2].values[5] = false
 		v[3].values[5] = false
 
+		for i := 0; i < 6; i++ {
+			s := getSolution(v[i])
+
+			if s == 5 && i == 5 {
+				v = enforceRising(v, 3)
+			}
+
+			if s == 5 && i == 4 {
+				v = enforceRising(v, i)
+			}
+		}
+
 		return v
 	})
 }
 
 func fours(eMap eliminationMap, clue, clueNumber int) eliminationMap {
 	return processClue(eMap, clue, clueNumber, func(v vector, clue int) vector {
+		v[0].values[3] = false
+		v[0].values[4] = false
 		v[0].values[5] = false
+		v[1].values[4] = false
 		v[1].values[5] = false
 		v[2].values[5] = false
+
+		for i := 2; i < 4; i++ {
+			if v[i].values[4] == false {
+				v[i+1].values[5] = false
+			}
+		}
+
+		for i := 0; i < 6; i++ {
+			s := getSolution(v[i])
+
+			if s == 5 && i == 3 {
+				v = enforceRising(v, i)
+
+			}
+		}
 
 		return v
 	})
@@ -102,6 +162,14 @@ func threes(eMap eliminationMap, clue, clueNumber int) eliminationMap {
 		v[0].values[5] = false
 		v[1].values[5] = false
 
+		for i := 0; i < 6; i++ {
+			s := getSolution(v[i])
+
+			if s == 5 && i == 2 {
+				v = enforceRising(v, i)
+			}
+		}
+
 		return v
 	})
 }
@@ -109,6 +177,57 @@ func threes(eMap eliminationMap, clue, clueNumber int) eliminationMap {
 func twos(eMap eliminationMap, clue, clueNumber int) eliminationMap {
 	return processClue(eMap, clue, clueNumber, func(v vector, clue int) vector {
 		v[0].values[5] = false
+
+		var hasSolvedSix bool
+		var firstCellMax int
+		var maxInternalSolution int
+
+		for i := 5; i > 0; i-- {
+			s := getSolution(v[i])
+
+			if hasSolvedSix {
+				v[i] = trimCellMax(v[i], firstCellMax)
+			}
+
+			if hasSolvedSix && s != -1 {
+				maxInternalSolution = int(math.Max(float64(s), float64(maxInternalSolution)))
+			}
+
+			if s == 5 {
+				hasSolvedSix = true
+				firstCellMax = getCellMax(v[0])
+			}
+		}
+
+		for i := 1; i < 6; i++ { //
+			if v[i].values[5] == true {
+				break
+			} else {
+				// TODO
+				// Count the cells between the first and the first possible 6
+				// trim the first cell from 1 to n based on that number
+				// For example, if there are two cells in between the first
+				// cell and the first possible six, then the first cell must be
+				// at least a three
+
+				// TODO consider checking for missing possibilities in the interstitial
+				// cells.
+				// That could potentially require the first cell min to be higher
+
+				// TODO all cells in between the first and first possible six
+				// must be less than the firstCellMax
+
+				fmt.Println("firstCellMax", firstCellMax)
+				logCell(v[i])
+				fmt.Println("")
+
+				// v[i] = trimCellMax(v[i], firstCellMax)
+			}
+		}
+
+		if maxInternalSolution > 0 {
+			v[0] = trimCellMin(v[0], maxInternalSolution)
+		}
 
 		return v
 	})
@@ -155,9 +274,6 @@ func processClue(eMap eliminationMap, clue, clueNumber int, processVector func(v
 		eMap = replaceVector(eMap, v)
 	}
 
-	fmt.Println("")
-	fmt.Println("clueBlock", clueBlock)
-	fmt.Println("vectorNumber", vectorNumber)
 	eMap = eliminate(eMap)
 
 	return eMap
@@ -270,6 +386,46 @@ func getSolution(c cell) int {
 	return result
 }
 
+func enforceRising(v vector, end int) vector {
+	for i := end; i >= 0; i-- {
+		max := getCellMax(v[i])
+
+		for j := i - 1; j >= 0; j-- {
+			v[j] = trimCellMax(v[j], max)
+		}
+	}
+
+	return v
+}
+
+func getCellMax(c cell) int {
+	var result int
+
+	for i, value := range c.values {
+		if value == true {
+			result = i
+		}
+	}
+
+	return result
+}
+
+func trimCellMax(c cell, max int) cell {
+	for i := max; i < 6; i++ {
+		c.values[i] = false
+	}
+
+	return c
+}
+
+func trimCellMin(c cell, min int) cell {
+	for i := 0; i <= min; i++ {
+		c.values[i] = false
+	}
+
+	return c
+}
+
 func processEliminationMap(eMap eliminationMap, processCell func(c cell) cell) eliminationMap {
 	for i := 0; i < 6; i++ {
 		for j := 0; j < 6; j++ {
@@ -347,12 +503,25 @@ func getEliminationMap() eliminationMap {
 	return result
 }
 
-func logMap(eMap eliminationMap) {
+func logMap(eMap eliminationMap, clues []int) {
 	fmt.Println("")
 
-	for _, row := range eMap {
+	for i := 0; i < 6; i++ {
+		fmt.Printf("         %v  ", clues[i])
+	}
+
+	fmt.Println("")
+
+	for i, row := range eMap {
+		fmt.Printf("%v   ", clues[23-i])
 		logVector(row)
+		fmt.Printf("   %v", clues[i+6])
+
 		fmt.Println("")
+	}
+
+	for i := 17; i >= 12; i-- {
+		fmt.Printf("         %v  ", clues[i])
 	}
 
 	fmt.Println("")

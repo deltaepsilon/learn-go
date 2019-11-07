@@ -8,25 +8,25 @@ import (
 )
 
 var _ = Describe("Skyscrapers", func() {
-	// It("can solve 6x6 puzzle 1", func() {
-	// 	var clues = []int{
-	// 		3, 2, 2, 3, 2, 1,
-	// 		1, 2, 3, 3, 2, 2,
-	// 		5, 1, 2, 2, 4, 3,
-	// 		3, 2, 1, 2, 2, 4,
-	// 	}
+	It("can solve 6x6 puzzle 1", func() {
+		var clues = []int{
+			3, 2, 2, 3, 2, 1,
+			1, 2, 3, 3, 2, 2,
+			5, 1, 2, 2, 4, 3,
+			3, 2, 1, 2, 2, 4,
+		}
 
-	// 	var expected = [][]int{
-	// 		{2, 1, 4, 3, 5, 6},
-	// 		{1, 6, 3, 2, 4, 5},
-	// 		{4, 3, 6, 5, 1, 2},
-	// 		{6, 5, 2, 1, 3, 4},
-	// 		{5, 4, 1, 6, 2, 3},
-	// 		{3, 2, 5, 4, 6, 1},
-	// 	}
+		var expected = [][]int{
+			{2, 1, 4, 3, 5, 6},
+			{1, 6, 3, 2, 4, 5},
+			{4, 3, 6, 5, 1, 2},
+			{6, 5, 2, 1, 3, 4},
+			{5, 4, 1, 6, 2, 3},
+			{3, 2, 5, 4, 6, 1},
+		}
 
-	// 	Expect(SolvePuzzle(clues)).To(Equal(expected))
-	// })
+		Expect(SolvePuzzle(clues)).To(Equal(expected))
+	})
 
 	It("can solve 6x6 puzzle 2", func() {
 		var clues = []int{
