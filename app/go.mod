@@ -13,10 +13,7 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.4.0
-	golang.org/x/net v0.0.0-20191007182048-72f939374954 // indirect
-	golang.org/x/sys v0.0.0-20191010194322-b09406accb47 // indirect
-	golang.org/x/text v0.3.2 // indirect
-	rsc.io/quote v1.5.2
+	golang.org/x/text v0.3.8 // indirect
 )
 
 replace github.com/deltaepsilon/learn-go => ./
